@@ -54,7 +54,7 @@
 
 
 - **Sample Query Output**:![table creation](https://github.com/user-attachments/assets/227fc53e-34f0-4870-a9b7-419d6f781b12)
-  ![insert data](https://github.com/user-attachments/assets/b07d659f-59ee-433b-b9a9-993b00bda3f9)
+  ![insert data]procedure.PNG
   ![interacton](https://github.com/user-attachments/assets/6d2abfd9-ede5-4dc7-bea6-fa569caad90c)
   ![trigger](https://github.com/user-attachments/assets/07444e3a-5348-466e-a72f-f1775c0f99a0)
   ![procedure](https://github.com/user-attachments/assets/75ed05ec-e917-45d6-9e83-8088e0dd47f7)
