@@ -69,86 +69,44 @@
 ## 📂 SQL Queries
 - **Table Creation and Data Insertion**:
 ```sql
- -- Table Creation for Healthcare System Management
-CREATE TABLE Vendors (
-    VendorID NUMBER PRIMARY KEY,
-    VendorName VARCHAR2(100) NOT NULL,
-    ContactInfo VARCHAR2(200),
-    Address VARCHAR2(200)
+ -- Table Creation
+CREATE TABLE Patients (
+    PatientID NUMBER PRIMARY KEY,
+    FirstName VARCHAR2(50) NOT NULL,
+    LastName VARCHAR2(50) NOT NULL,
+    DOB DATE NOT NULL,
+    ContactNumber VARCHAR2(15),
+    Email VARCHAR2(100) UNIQUE
 );
 
-CREATE TABLE MedicalSupplies (
-    SupplyID NUMBER PRIMARY KEY,
-    SupplyName VARCHAR2(100) NOT NULL,
-    Category VARCHAR2(50),
-    UnitPrice NUMBER CHECK (UnitPrice >= 0)
+CREATE TABLE Healthcare_Providers (
+    ProviderID NUMBER PRIMARY KEY,
+    FirstName VARCHAR2(50) NOT NULL,
+    LastName VARCHAR2(50) NOT NULL,
+    Specialty VARCHAR2(100),
+    ContactNumber VARCHAR2(15)
 );
 
-CREATE TABLE Inventory (
-    InventoryID NUMBER PRIMARY KEY,
-    SupplyID NUMBER UNIQUE,
-    QuantityInStock NUMBER CHECK (QuantityInStock >= 0),
-    LastUpdated DATE,
-    FOREIGN KEY (SupplyID) REFERENCES MedicalSupplies(SupplyID)
+CREATE TABLE Appointments (
+    AppointmentID NUMBER PRIMARY KEY,
+    PatientID NUMBER NOT NULL,
+    ProviderID NUMBER NOT NULL,
+    AppointmentDate DATE NOT NULL,
+    AppointmentTime VARCHAR2(5) NOT NULL,
+    Status VARCHAR2(20) DEFAULT 'Scheduled',
+    FOREIGN KEY (PatientID) REFERENCES Patients(PatientID),
+    FOREIGN KEY (ProviderID) REFERENCES Healthcare_Providers(ProviderID)
 );
 
-CREATE TABLE Departments (
-    DepartmentID NUMBER PRIMARY KEY,
-    DepartmentName VARCHAR2(100) NOT NULL,
-    ManagerID NUMBER
-);
+-- Insert Sample Data
+INSERT INTO Patients VALUES (1, 'John', 'Doe', TO_DATE('1980-05-15', 'YYYY-MM-DD'), '1234567890', 'john.doe@email.com');
+INSERT INTO Patients VALUES (2, 'Jane', 'Smith', TO_DATE('1990-08-22', 'YYYY-MM-DD'), '0987654321', 'jane.smith@email.com');
 
-CREATE TABLE PurchaseOrders (
-    OrderID NUMBER PRIMARY KEY,
-    VendorID NUMBER,
-    DepartmentID NUMBER,
-    OrderDate DATE NOT NULL,
-    TotalAmount NUMBER,
-    FOREIGN KEY (VendorID) REFERENCES Vendors(VendorID),
-    FOREIGN KEY (DepartmentID) REFERENCES Departments(DepartmentID)
-);
+INSERT INTO Healthcare_Providers VALUES (1, 'Emily', 'Brown', 'Cardiology', '5551234567');
+INSERT INTO Healthcare_Providers VALUES (2, 'Michael', 'Lee', 'Pediatrics', '5559876543');
 
-CREATE TABLE OrderDetails (
-    OrderDetailID NUMBER PRIMARY KEY,
-    OrderID NUMBER,
-    SupplyID NUMBER,
-    QuantityOrdered NUMBER CHECK (QuantityOrdered > 0),
-    UnitPrice NUMBER CHECK (UnitPrice >= 0),
-    FOREIGN KEY (OrderID) REFERENCES PurchaseOrders(OrderID),
-    FOREIGN KEY (SupplyID) REFERENCES MedicalSupplies(SupplyID)
-);
-
-CREATE TABLE UsageTracking (
-    UsageID NUMBER PRIMARY KEY,
-    SupplyID NUMBER,
-    DepartmentID NUMBER,
-    QuantityUsed NUMBER CHECK (QuantityUsed > 0),
-    UsageDate DATE,
-    FOREIGN KEY (SupplyID) REFERENCES MedicalSupplies(SupplyID),
-    FOREIGN KEY (DepartmentID) REFERENCES Departments(DepartmentID)
-);
-
--- Data Insertion
-INSERT INTO Vendors VALUES (1, 'MediCorp', 'contact@medicorp.com', '123 Kigali St');
-INSERT INTO Vendors VALUES (2, 'HealthSupplies Ltd', 'info@healthsupplies.rw', '456 Gisenyi Rd');
-
-INSERT INTO MedicalSupplies VALUES (1, 'Syringes', 'Equipment', 2.5);
-INSERT INTO MedicalSupplies VALUES (2, 'Paracetamol', 'Medicine', 0.1);
-
-INSERT INTO Inventory VALUES (1, 1, 1000, TO_DATE('2025-05-10', 'YYYY-MM-DD'));
-INSERT INTO Inventory VALUES (2, 2, 5000, TO_DATE('2025-05-10', 'YYYY-MM-DD'));
-
-INSERT INTO Departments VALUES (1, 'Cardiology', 101);
-INSERT INTO Departments VALUES (2, 'Pharmacy', 102);
-
-INSERT INTO PurchaseOrders VALUES (1, 1, 1, TO_DATE('2025-05-01', 'YYYY-MM-DD'), 2500);
-INSERT INTO PurchaseOrders VALUES (2, 2, 2, TO_DATE('2025-05-02', 'YYYY-MM-DD'), 500);
-
-INSERT INTO OrderDetails VALUES (1, 1, 1, 1000, 2.5);
-INSERT INTO OrderDetails VALUES (2, 2, 2, 5000, 0.1);
-
-INSERT INTO UsageTracking VALUES (1, 1, 1, 50, TO_DATE('2025-05-05', 'YYYY-MM-DD'));
-INSERT INTO UsageTracking VALUES (2, 2, 2, 100, TO_DATE('2025-05-06', 'YYYY-MM-DD'));
+INSERT INTO Appointments VALUES (1, 1, 1, TO_DATE('2025-06-01', 'YYYY-MM-DD'), '10:00', 'Scheduled');
+INSERT INTO Appointments VALUES (2, 2, 2, TO_DATE('2025-06-02', 'YYYY-MM-DD'), '14:00', 'Scheduled');
 ```
 - **Triggers**:
 ```sql
