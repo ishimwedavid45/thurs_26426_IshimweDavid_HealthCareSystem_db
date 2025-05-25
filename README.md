@@ -38,7 +38,7 @@
 - Closed-Loop System: The process ensures inventory levels are always updated, maintaining data accuracy for future requests.
 
 - **OEM Dashboard**:![Capture1](https://github.com/user-attachments/assets/3f502ace-8873-42f0-b922-0471f9dcd051)
-      ![Uploading Capture.PNG…]()
+      
 
 
 - These images show the Oracle SQL*Plus command-line interface demonstrating the creation and setup of your Healthcare Supply Chain Management database
