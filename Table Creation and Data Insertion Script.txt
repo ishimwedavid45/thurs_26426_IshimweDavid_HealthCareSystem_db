@@ -1,0 +1,38 @@
+-- Table Creation
+CREATE TABLE Patients (
+    PatientID NUMBER PRIMARY KEY,
+    FirstName VARCHAR2(50) NOT NULL,
+    LastName VARCHAR2(50) NOT NULL,
+    DOB DATE NOT NULL,
+    ContactNumber VARCHAR2(15),
+    Email VARCHAR2(100) UNIQUE
+);
+
+CREATE TABLE Healthcare_Providers (
+    ProviderID NUMBER PRIMARY KEY,
+    FirstName VARCHAR2(50) NOT NULL,
+    LastName VARCHAR2(50) NOT NULL,
+    Specialty VARCHAR2(100),
+    ContactNumber VARCHAR2(15)
+);
+
+CREATE TABLE Appointments (
+    AppointmentID NUMBER PRIMARY KEY,
+    PatientID NUMBER NOT NULL,
+    ProviderID NUMBER NOT NULL,
+    AppointmentDate DATE NOT NULL,
+    AppointmentTime VARCHAR2(5) NOT NULL,
+    Status VARCHAR2(20) DEFAULT 'Scheduled',
+    FOREIGN KEY (PatientID) REFERENCES Patients(PatientID),
+    FOREIGN KEY (ProviderID) REFERENCES Healthcare_Providers(ProviderID)
+);
+
+-- Insert Sample Data
+INSERT INTO Patients VALUES (1, 'John', 'Doe', TO_DATE('1980-05-15', 'YYYY-MM-DD'), '1234567890', 'john.doe@email.com');
+INSERT INTO Patients VALUES (2, 'Jane', 'Smith', TO_DATE('1990-08-22', 'YYYY-MM-DD'), '0987654321', 'jane.smith@email.com');
+
+INSERT INTO Healthcare_Providers VALUES (1, 'Emily', 'Brown', 'Cardiology', '5551234567');
+INSERT INTO Healthcare_Providers VALUES (2, 'Michael', 'Lee', 'Pediatrics', '5559876543');
+
+INSERT INTO Appointments VALUES (1, 1, 1, TO_DATE('2025-06-01', 'YYYY-MM-DD'), '10:00', 'Scheduled');
+INSERT INTO Appointments VALUES (2, 2, 2, TO_DATE('2025-06-02', 'YYYY-MM-DD'), '14:00', 'Scheduled');

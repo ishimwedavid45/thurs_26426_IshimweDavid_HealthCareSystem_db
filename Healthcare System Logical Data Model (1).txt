@@ -1,0 +1,67 @@
+-- Logical Data Model for Healthcare System
+-- Normalization Analysis:
+-- 1NF: All attributes are atomic; each table has a primary key.
+-- 2NF: All tables have single-column primary keys, so no partial dependencies.
+-- 3NF: No transitive dependencies; all non-key attributes depend only on the primary key.
+-- Example: In Patient, name, age, contact, address depend on patient_id, not on each other.
+
+CREATE TABLE Patient (
+    patient_id NUMBER PRIMARY KEY,
+    name VARCHAR2(100) NOT NULL,
+    age NUMBER,
+    contact VARCHAR2(20),
+    address VARCHAR2(200)
+);
+
+CREATE TABLE Healthcare_Provider (
+    provider_id NUMBER PRIMARY KEY,
+    name VARCHAR2(100) NOT NULL,
+    specialty VARCHAR2(50),
+    contact VARCHAR2(20)
+);
+
+CREATE TABLE Appointment (
+    appointment_id NUMBER PRIMARY KEY,
+    patient_id NUMBER,
+    provider_id NUMBER,
+    date_time DATE,
+    status VARCHAR2(20),
+    FOREIGN KEY (patient_id) REFERENCES Patient(patient_id),
+    FOREIGN KEY (provider_id) REFERENCES Healthcare_Provider(provider_id)
+);
+
+CREATE TABLE Medical_Record (
+    record_id NUMBER PRIMARY KEY,
+    patient_id NUMBER,
+    provider_id NUMBER,
+    diagnosis VARCHAR2(200),
+    treatment VARCHAR2(200),
+    record_date DATE,
+    FOREIGN KEY (patient_id) REFERENCES Patient(patient_id),
+    FOREIGN KEY (provider_id) REFERENCES Healthcare_Provider(provider_id)
+);
+
+CREATE TABLE Prescription (
+    prescription_id NUMBER PRIMARY KEY,
+    record_id NUMBER,
+    medication VARCHAR2(100),
+    dosage VARCHAR2(50),
+    instructions VARCHAR2(200),
+    FOREIGN KEY (record_id) REFERENCES Medical_Record(record_id)
+);
+
+CREATE TABLE Inventory (
+    item_id NUMBER PRIMARY KEY,
+    name VARCHAR2(100) NOT NULL,
+    quantity NUMBER,
+    type VARCHAR2(50)
+);
+
+CREATE TABLE Billing (
+    bill_id NUMBER PRIMARY KEY,
+    appointment_id NUMBER,
+    amount NUMBER,
+    payment_status VARCHAR2(20),
+    record_date DATE,
+    FOREIGN KEY (appointment_id) REFERENCES Appointment(appointment_id)
+);
