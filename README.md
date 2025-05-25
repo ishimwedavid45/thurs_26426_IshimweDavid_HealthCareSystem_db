@@ -1,17 +1,17 @@
-# Healthcare Supply Chain Management System
+# Healthcare system Management
 ![Oracle](https://img.shields.io/badge/Oracle-SQL-blue.svg)
 ![PL/SQL](https://img.shields.io/badge/PL%2FSQL-Database-orange.svg)
 ![GitHub](https://img.shields.io/badge/GitHub-Repository-green.svg)
 
 
 ## Introduction
-- **Student**: Shema Ken (26503)
-- **Group**: Tuesday
+- **Student**: ISHIMWE DAVID(26426)
+- **Group**: Thursday
 - **Course**: Database Development with PL/SQL (INSY 8311)
 - **Lecturer**: Eric Maniraguha
 
 ## 📋 Problem Statement
- The project addresses inefficiencies in health care supply chain management by developing a PL/SQL-based Oracle database to automate procurement, track inventory, and enhance decision-making.
+ The project addresses inefficiencies in health care system management by developing a PL/SQL-based Oracle database to automate procurement, track inventory, and enhance decision-making.
 ## 📊 Methodology
 - **Phase I**: Defined problem and presented objectives.
 - **Phase II**: Modeled order processing using UML.
@@ -67,7 +67,7 @@
 ## 📂 SQL Queries
 - **Table Creation and Data Insertion**:
 ```sql
- -- Table Creation for Healthcare Supply Chain Management
+ -- Table Creation for Healthcare System Management
 CREATE TABLE Vendors (
     VendorID NUMBER PRIMARY KEY,
     VendorName VARCHAR2(100) NOT NULL,
