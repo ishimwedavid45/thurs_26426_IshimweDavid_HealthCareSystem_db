@@ -16,7 +16,7 @@
 - **Phase I**: Defined problem and presented objectives.
 - **Phase II**: Modeled order processing using UML.
 - **Phase III**: Designed logical data model with ER diagram.
-- **Phase IV**: Created pluggable database (Tues_26503_ShemaKen_HealthcareSupplyChain_DB).
+- **Phase IV**: Created pluggable database (Thurs_26426_IshimweDavid_HealthcareSystem_DB).
 - **Phase V**: Implemented tables and inserted realistic data.
 - **Phase VI**: Developed procedures for order processing and data retrieval.
 - **Phase VII**: Implemented triggers and auditing for security.
