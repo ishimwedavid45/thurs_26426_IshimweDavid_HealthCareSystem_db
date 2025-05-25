@@ -38,10 +38,11 @@
 - Multi-Role Involvement: The process involves various stakeholders (Department Head, Inventory Coordinator, Procurement Manager, Finance Officer), reflecting real-world healthcare supply chain complexity.
 - Closed-Loop System: The process ensures inventory levels are always updated, maintaining data accuracy for future requests.
 
-- **OEM Dashboard**:![Capture1](https://github.com/user-attachments/assets/3f502ace-8873-42f0-b922-0471f9dcd051)
-      
-
-
+- **OEM Dashboard**:
+![Capture1](https://github.com/user-attachments/assets/3f502ace-8873-42f0-b922-0471f9dcd051)
+![Capture](https://github.com/user-attachments/assets/f7f3be7f-9702-45c7-9e48-153e70ca83c5)
+![SQL4](https://github.com/user-attachments/assets/3f0e2d61-27b4-47e7-8916-ccbe83cae5cc)
+![SQL5](https://github.com/user-attachments/assets/84913987-0a6b-4067-a15e-a34a7a6ebf8b)
 - These images show the Oracle SQL*Plus command-line interface demonstrating the creation and setup of your Healthcare Supply Chain Management database
 - Successful Elements: Pluggable database architecture setup, user creation and privilege management
 - Technical Challenges: File system path configuration issues that need resolution
