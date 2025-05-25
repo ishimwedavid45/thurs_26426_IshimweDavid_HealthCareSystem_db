@@ -23,14 +23,15 @@
 - **Phase VIII**: Compiled documentation and presentation.
 
 ## 📸 Screenshots
-- **ER Diagram**: ![er diagram](https://github.com/user-attachments/assets/d62b6318-d76f-45aa-8de5-9856213c2957)
+- **ER Diagram**:![ER Diagram](https://github.com/user-attachments/assets/b64e6d35-9e65-498f-badc-d32cc8c346d6)
+
 - This Entity-Relationship (ER) Diagram outlines a structured database for managing medical supplies in a healthcare setting. It tracks procurement, inventory, and usage across departments.
 - Key Relationships:
 - Vendors → Purchase Orders → Order Details → Medical Supplies → Inventory (procurement & stock flow).
 - Medical Supplies → Usage Tracking (monitors departmental usage).
 - This system ensures efficient supply tracking, cost management, and inventory control in healthcare operations.
 
-- **UML Diagram**:[![Activity diagram](https://github.com/user-attachments/assets/58c7d59b-16eb-4773-b5f1-14fa9909f24c)](https://github.com/ishimwedavid45/thurs_26426_IshimweDavid_HealthCareSystem_db/blob/main/Activity%20diagram.png)
+- **UML Diagram**:[![Activity diagram](https://github.com/user-attachments/assets/58c7d59b-16eb-4773-b5f1-14fa9909f24c)]
 - This diagram illustrates the Healthcare Supply Chain Management Process Model, showing the complete workflow from supply request to delivery.
 - Database Integration: The diagram shows multiple points where your Oracle database system is accessed (checking stock levels, updating inventory)
 - Decision-Driven Process: The workflow includes a critical decision point that determines whether to procure new supplies or fulfill from existing stock.
@@ -53,11 +54,11 @@
 
 
 
-- **Sample Query Output**:![table creation](https://github.com/user-attachments/assets/227fc53e-34f0-4870-a9b7-419d6f781b12)
-  ![insert data]procedure.PNG
-  ![interacton](https://github.com/user-attachments/assets/6d2abfd9-ede5-4dc7-bea6-fa569caad90c)
-  ![trigger](https://github.com/user-attachments/assets/07444e3a-5348-466e-a72f-f1775c0f99a0)
-  ![procedure](https://github.com/user-attachments/assets/75ed05ec-e917-45d6-9e83-8088e0dd47f7)
+- **Sample Query Output**:
+  ![tables](https://github.com/user-attachments/assets/ee583363-5c28-42b3-926f-e679390d3dbf)
+  ![insert data](https://github.com/user-attachments/assets/8eaec234-070b-4bf8-9165-e8bbc4cb0737)
+  ![trigger](https://github.com/user-attachments/assets/d30f3e8d-9709-4861-8e24-3fb2edc6abe6)
+  ![procedure](https://github.com/user-attachments/assets/723db723-1122-4779-abd4-300b7680b2ec)
 - These images show Oracle SQL Developer in action, demonstrating the implementation of your Healthcare Supply Chain Management database project.
 - GUI Development Environment: Professional Oracle SQL Developer interface
 - Complex PL/SQL: Advanced triggers, packages, and procedures
