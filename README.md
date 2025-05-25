@@ -30,7 +30,7 @@
 - Medical Supplies → Usage Tracking (monitors departmental usage).
 - This system ensures efficient supply tracking, cost management, and inventory control in healthcare operations.
 
-- **UML Diagram**:![Activity diagram](https://github.com/user-attachments/assets/58c7d59b-16eb-4773-b5f1-14fa9909f24c)
+- **UML Diagram**:[![Activity diagram](https://github.com/user-attachments/assets/58c7d59b-16eb-4773-b5f1-14fa9909f24c)](https://github.com/ishimwedavid45/thurs_26426_IshimweDavid_HealthCareSystem_db/blob/main/Activity%20diagram.png)
 - This diagram illustrates the Healthcare Supply Chain Management Process Model, showing the complete workflow from supply request to delivery.
 - Database Integration: The diagram shows multiple points where your Oracle database system is accessed (checking stock levels, updating inventory)
 - Decision-Driven Process: The workflow includes a critical decision point that determines whether to procure new supplies or fulfill from existing stock.
