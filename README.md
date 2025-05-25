@@ -97,6 +97,73 @@ CREATE TABLE Appointments (
     FOREIGN KEY (PatientID) REFERENCES Patients(PatientID),
     FOREIGN KEY (ProviderID) REFERENCES Healthcare_Providers(ProviderID)
 );
+-- Logical Data Model for Healthcare System
+-- Normalization Analysis:
+-- 1NF: All attributes are atomic; each table has a primary key.
+-- 2NF: All tables have single-column primary keys, so no partial dependencies.
+-- 3NF: No transitive dependencies; all non-key attributes depend only on the primary key.
+-- Example: In Patient, name, age, contact, address depend on patient_id, not on each other.
+
+CREATE TABLE Patient (
+    patient_id NUMBER PRIMARY KEY,
+    name VARCHAR2(100) NOT NULL,
+    age NUMBER,
+    contact VARCHAR2(20),
+    address VARCHAR2(200)
+);
+
+CREATE TABLE Healthcare_Provider (
+    provider_id NUMBER PRIMARY KEY,
+    name VARCHAR2(100) NOT NULL,
+    specialty VARCHAR2(50),
+    contact VARCHAR2(20)
+);
+
+CREATE TABLE Appointment (
+    appointment_id NUMBER PRIMARY KEY,
+    patient_id NUMBER,
+    provider_id NUMBER,
+    date_time DATE,
+    status VARCHAR2(20),
+    FOREIGN KEY (patient_id) REFERENCES Patient(patient_id),
+    FOREIGN KEY (provider_id) REFERENCES Healthcare_Provider(provider_id)
+);
+
+CREATE TABLE Medical_Record (
+    record_id NUMBER PRIMARY KEY,
+    patient_id NUMBER,
+    provider_id NUMBER,
+    diagnosis VARCHAR2(200),
+    treatment VARCHAR2(200),
+    record_date DATE,
+    FOREIGN KEY (patient_id) REFERENCES Patient(patient_id),
+    FOREIGN KEY (provider_id) REFERENCES Healthcare_Provider(provider_id)
+);
+
+CREATE TABLE Prescription (
+    prescription_id NUMBER PRIMARY KEY,
+    record_id NUMBER,
+    medication VARCHAR2(100),
+    dosage VARCHAR2(50),
+    instructions VARCHAR2(200),
+    FOREIGN KEY (record_id) REFERENCES Medical_Record(record_id)
+);
+
+CREATE TABLE Inventory (
+    item_id NUMBER PRIMARY KEY,
+    name VARCHAR2(100) NOT NULL,
+    quantity NUMBER,
+    type VARCHAR2(50)
+);
+
+CREATE TABLE Billing (
+    bill_id NUMBER PRIMARY KEY,
+    appointment_id NUMBER,
+    amount NUMBER,
+    payment_status VARCHAR2(20),
+    record_date DATE,
+    FOREIGN KEY (appointment_id) REFERENCES Appointment(appointment_id)
+);
 
 -- Insert Sample Data
 INSERT INTO Patients VALUES (1, 'John', 'Doe', TO_DATE('1980-05-15', 'YYYY-MM-DD'), '1234567890', 'john.doe@email.com');
@@ -184,61 +251,144 @@ END SupplyChain_Restrictions;
 - **Procedures**:
 ```sql
 -- Package Specification
-CREATE OR REPLACE PACKAGE SupplyChain_Pkg AS
-    PROCEDURE FetchInventoryStatus(p_SupplyID IN NUMBER, p_Quantity OUT NUMBER);
-    FUNCTION CalculateTotalSpending(p_DepartmentID IN NUMBER) RETURN NUMBER;
-END SupplyChain_Pkg;
-/
+-- Create audit table
+CREATE TABLE Audit_Log (
+    audit_id NUMBER PRIMARY KEY,
+    table_name VARCHAR2(50),
+    action VARCHAR2(20),
+    user_name VARCHAR2(50),
+    action_date DATE
+);
 
--- Package Body
-CREATE OR REPLACE PACKAGE BODY SupplyChain_Pkg AS
-    PROCEDURE FetchInventoryStatus(p_SupplyID IN NUMBER, p_Quantity OUT NUMBER) IS
-        CURSOR inv_cursor IS
-            SELECT QuantityInStock
-            FROM Inventory
-            WHERE SupplyID = p_SupplyID;
-    BEGIN
-        OPEN inv_cursor;
-        FETCH inv_cursor INTO p_Quantity;
-        IF inv_cursor%NOTFOUND THEN
-            RAISE_APPLICATION_ERROR(-20001, 'Supply ID not found.');
-        END IF;
-        CLOSE inv_cursor;
-    EXCEPTION
-        WHEN OTHERS THEN
-            RAISE_APPLICATION_ERROR(-20002, 'Error fetching inventory: ' || SQLERRM);
-    END FetchInventoryStatus;
+-- Create sequence for audit_id
+CREATE SEQUENCE audit_seq START WITH 1 INCREMENT BY 1;
 
-    FUNCTION CalculateTotalSpending(p_DepartmentID IN NUMBER) RETURN NUMBER IS
-        v_Total NUMBER;
-    BEGIN
-        SELECT SUM(TotalAmount) OVER (PARTITION BY DepartmentID)
-        INTO v_Total
-        FROM PurchaseOrders
-        WHERE DepartmentID = p_DepartmentID;
-        RETURN NVL(v_Total, 0);
-    EXCEPTION
-        WHEN NO_DATA_FOUND THEN
-            RETURN 0;
-        WHEN OTHERS THEN
-            RAISE_APPLICATION_ERROR(-20003, 'Error calculating spending: ' || SQLERRM);
-    END CalculateTotalSpending;
-END SupplyChain_Pkg;
-/
-
--- Example DML Operation
-INSERT INTO UsageTracking VALUES (3, 1, 1, 20, TO_DATE('2025-05-07', 'YYYY-MM-DD'));
-
--- Example DDL Operation
-ALTER TABLE MedicalSupplies ADD (SupplierRating NUMBER DEFAULT 0);
-
--- Testing Procedure
+-- Trigger to block DML on weekends
+CREATE OR REPLACE TRIGGER block_dml_weekend
+BEFORE INSERT OR UPDATE OR DELETE ON Medical_Record
 DECLARE
-    v_Quantity NUMBER;
+    v_day VARCHAR2(10);
 BEGIN
-    SupplyChain_Pkg.FetchInventoryStatus(1, v_Quantity);
-    DBMS_OUTPUT.PUT_LINE('Quantity in Stock: ' || v_Quantity);
+    SELECT TO_CHAR(SYSDATE, 'DAY') INTO v_day FROM dual;
+    IF v_day IN ('SATURDAY', 'SUNDAY') THEN
+        RAISE_APPLICATION_ERROR(-20001, 'DML operations are blocked on weekends.');
+    END IF;
 END;
+/
+
+-- Trigger to log audit actions
+CREATE OR REPLACE TRIGGER log_audit
+AFTER INSERT OR UPDATE OR DELETE ON Medical_Record
+FOR EACH ROW
+DECLARE
+    v_action VARCHAR2(20);
+BEGIN
+    IF INSERTING THEN
+        v_action := 'INSERT';
+    ELSIF UPDATING THEN
+        v_action := 'UPDATE';
+    ELSIF DELETING THEN
+        v_action := 'DELETE';
+    END IF;
+    INSERT INTO Audit_Log (audit_id, table_name, action, user_name, action_date)
+    VALUES (audit_seq.NEXTVAL, 'Medical_Record', v_action, USER, SYSDATE);
+END;
+/
+
+-- Procedure to schedule an appointment
+CREATE OR REPLACE PROCEDURE schedule_appointment (
+    p_patient_id IN NUMBER,
+    p_provider_id IN NUMBER,
+    p_date_time IN DATE,
+    p_appointment_id OUT NUMBER
+) AS
+    v_count NUMBER;
+BEGIN
+    -- Check if the provider is available at the given time
+    SELECT COUNT(*) INTO v_count
+    FROM Appointment
+    WHERE provider_id = p_provider_id
+    AND date_time = p_date_time;
+    
+    IF v_count = 0 THEN
+        SELECT NVL(MAX(appointment_id), 0) + 1 INTO p_appointment_id FROM Appointment;
+        INSERT INTO Appointment (appointment_id, patient_id, provider_id, date_time, status)
+        VALUES (p_appointment_id, p_patient_id, p_provider_id, p_date_time, 'Scheduled');
+        COMMIT;
+    ELSE
+        RAISE_APPLICATION_ERROR(-20002, 'Provider is not available at the specified time.');
+    END IF;
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE;
+END;
+/
+
+-- Procedure to update inventory after prescription
+CREATE OR REPLACE PROCEDURE update_inventory (
+    p_medication IN VARCHAR2,
+    p_quantity_used IN NUMBER
+) AS
+    v_item_id NUMBER;
+    v_current_quantity NUMBER;
+BEGIN
+    -- Find the item_id for the medication
+    SELECT item_id, quantity INTO v_item_id, v_current_quantity
+    FROM Inventory
+    WHERE name = p_medication;
+    
+    IF v_current_quantity >= p_quantity_used THEN
+        UPDATE Inventory
+        SET quantity = quantity - p_quantity_used
+        WHERE item_id = v_item_id;
+        COMMIT;
+    ELSE
+        RAISE_APPLICATION_ERROR(-20003, 'Insufficient inventory for ' || p_medication);
+    END IF;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RAISE_APPLICATION_ERROR(-20004, 'Medication not found in inventory.');
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE;
+END;
+/
+
+-- Procedure to generate billing summary
+CREATE OR REPLACE PROCEDURE generate_billing_summary (
+    p_patient_id IN NUMBER
+) AS
+    CURSOR bill_cursor IS
+        SELECT b.bill_id, b.amount, b.payment_status, b.record_date
+        FROM Billing b
+        JOIN Appointment a ON b.appointment_id = a.appointment_id
+        WHERE a.patient_id = p_patient_id;
+BEGIN
+    FOR bill_rec IN bill_cursor LOOP
+        DBMS_OUTPUT.PUT_LINE('Bill ID: ' || bill_rec.bill_id || 
+                            ', Amount: ' || bill_rec.amount || 
+                            ', Status: ' || bill_rec.payment_status || 
+                            ', Date: ' || bill_rec.record_date);
+    END LOOP;
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE_APPLICATION_ERROR(-20005, 'Error generating billing summary.');
+END;
+/
+
+-- Test the procedures
+DECLARE
+    v_appointment_id NUMBER;
+BEGIN
+    schedule_appointment(1, 1, TO_DATE('2025-05-27 10:00', 'YYYY-MM-DD HH24:MI'), v_appointment_id);
+    DBMS_OUTPUT.PUT_LINE('Appointment ID: ' || v_appointment_id);
+    update_inventory('Paracetamol', 10);
+    generate_billing_summary(1);
+END;
+/
+
+
 /
 ```
 
